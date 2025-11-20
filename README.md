@@ -159,26 +159,6 @@ kafka-console-consumer --topic orders-dlq --bootstrap-server localhost:9092 --fr
 
 If you're using this consumer script's logic, the DLQ messages include headers that explain the failure reason and original offsets.
 
-## Expected behavior and notes
-
-- Transient failures are simulated for prices between 5.0 and 50.0: the consumer will not commit offsets for transient failures so the message will be retried according to your consumer group's behavior and the script's retry logic.
-- Permanent failures (price > 1000.0) are forwarded to `orders-dlq` with headers and are not reprocessed.
-- The producer sets message keys to `orderId` to help partitioning/ordering.
-- Both producer and consumer use Avro with the same `order.avsc` schema — ensure both sides use the same schema file.
-
-## Troubleshooting
-
-- "Unable to import confluent_kafka": ensure `confluent-kafka` is installed in your active Python environment. If you see compilation or wheel issues, install system dependencies like `librdkafka-dev` before reinstalling.
-- Kafka connectivity errors: confirm the broker address and that Kafka is running. If using Docker, ensure correct port mappings.
-- Avro deserialize errors: check that `order.avsc` matches the record structure produced by `producer.py`.
-
-## Next steps (suggestions)
-
-- Add a `docker-compose.yml` to stand up Kafka in KRaft mode for reproducible testing.
-- Add automated tests for the producer and consumer (unit tests for serialize/deserialize and integration tests against a test Kafka broker).
-- Add exponential backoff for retries and more granular failure categories.
-- Add schema registry integration for centralized Avro schema management.
-
 ## License
 
 This repository is provided as-is for learning and demo purposes.
